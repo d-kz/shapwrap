@@ -93,7 +93,7 @@ def shap_importance_by_cluster(data, shap_values, cluster_assignment):
     return df_clusters_agg, df_shap
 
 
-def grouped_shap(shap_vals, features:List[str], groups:Dict[str, str]):
+def aggregate_shap_by_group(shap_vals, features:List[str], groups:Dict[str, str]):
     """
     Reference: https://www.kaggle.com/code/estevaouyra/shap-advanced-uses-grouping-and-correlation/notebook
     :param shap_vals:
@@ -297,7 +297,7 @@ class ShapExplanation:
             return feature_importance
         elif plot_type == "summary_group":
             prefix_groups = column_to_prefix_map(columns=self.columns)
-            shap_groups = grouped_shap(shap_vals=self.shap_values, features=self.columns, groups=prefix_groups)
+            shap_groups = aggregate_shap_by_group(shap_vals=self.shap_values, features=self.columns, groups=prefix_groups)
             shap.summary_plot(shap_groups.values, features=shap_groups.columns,  alpha=0.3,)
         elif plot_type == "dependence":
             assert features != None

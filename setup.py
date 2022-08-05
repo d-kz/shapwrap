@@ -8,6 +8,7 @@ setup(
     author_email="deka6994@colorado.edu",
     description="A wrapper for SHAP library. Makes experimenting faster and extends functionality. ",
     install_requires=[
-        'shap'
+        'shap',
+        'seaborn'
     ],
 )
