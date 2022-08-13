@@ -251,7 +251,7 @@ class ShapExplanation:
         min_cluster_size: int = 50,
         features_ignore=None,
         keep_zero_values=False,
-        save_plot_path=True
+        save_plot_path=None
     ):
         # TODO: add alpha to all plots
         print("PLOTTING `{}`:".format(plot_type))
