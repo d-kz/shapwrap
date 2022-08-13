@@ -236,6 +236,10 @@ class ShapExplanation:
         self.shap_values = self.shap_values_object.values
         return self.shap_values
 
+    def test(self):
+        return "success"
+
+
     def plot(
         self,
         plot_type: str = "summary",
