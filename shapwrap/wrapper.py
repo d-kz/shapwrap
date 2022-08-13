@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 import shap
 import seaborn as sns
+import matplotlib.pyplot as plt
 
 cm = sns.light_palette("blue", as_cmap=True)
 cm_red = sns.light_palette("red", as_cmap=True)
@@ -250,7 +251,7 @@ class ShapExplanation:
         min_cluster_size: int = 50,
         features_ignore=None,
         keep_zero_values=False,
-        return_plot=True
+        save_plot_path=True
     ):
         # TODO: add alpha to all plots
         print("PLOTTING `{}`:".format(plot_type))
@@ -296,22 +297,26 @@ class ShapExplanation:
                 X_plot.iloc[:, feature_ids_to_plot],
                 max_display=n_features_display,
                 alpha=0.3,
-                matplotlib=return_plot,
-                show=True
+                show=False
             )
+            if save_plot_path is not None:
+                plt.savefig(save_plot_path)
             vals = np.abs(shap_values[:, feature_ids_to_plot]).mean(0)
             feature_importance = pd.DataFrame(list(zip(features, vals)), columns=["col_name", "feature_importance_vals"])
             feature_importance.sort_values(by=["feature_importance_vals"], ascending=False, inplace=True)
-            return feature_importance, plot
+            return feature_importance
         elif plot_type == "summary_group":
             prefix_groups = column_to_prefix_map(columns=self.columns)
             shap_groups = aggregate_shap_by_group(shap_vals=self.shap_values, features=self.columns, groups=prefix_groups)
-            shap.summary_plot(shap_groups.values, features=shap_groups.columns,  alpha=0.3, matplotlib = return_plot,show = True)
+            plot = shap.summary_plot(shap_groups.values, features=shap_groups.columns,  alpha=0.3,
+                                     show=False)
+            if save_plot_path is not None:
+                plt.savefig(save_plot_path)
 
             vals = np.abs(shap_values[:, feature_ids_to_plot]).mean(0)
             feature_importance = pd.DataFrame(list(zip(features, vals)), columns=["col_name", "feature_importance_vals"])
             feature_importance.sort_values(by=["feature_importance_vals"], ascending=False, inplace=True)
-            return feature_importance, plot
+            return feature_importance
         elif plot_type == "dependence":
             assert features != None
             for feat in features:
