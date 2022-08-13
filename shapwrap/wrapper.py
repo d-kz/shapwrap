@@ -112,9 +112,10 @@ def aggregate_shap_by_group(shap_vals, features:List[str], groups:Dict[str, str]
     return shap_grouped
 
 
-def column_to_prefix_map(columns: List[str], length_difference_thresh: int=5):
+def column_to_prefix_map(columns: List[str], length_difference_thresh: int=5, delimeter:str="_"):
     """
     Go through list of columns and find groups that start with the same prefix.
+    Assume "_" is used as a word delimeter in column names.
     Note, there is a filter to make sure all column groups are roughly the same length. Otherwise, I assume
     it's another feature. (e.g. "fruits_apple", "fruits_orange", "fruits_basket_average_price")
     :param columns:
@@ -125,7 +126,7 @@ def column_to_prefix_map(columns: List[str], length_difference_thresh: int=5):
     prefixes = {}
     for col in columns:
         # remove the last suffix (assuming it's from get_dummies)
-        col_clean = "_".join(col.split("_")[:-1])
+        col_clean = delimeter.join(col.split(delimeter)[:-1])
         prefixes[col_clean] = prefixes.get(col_clean, 0) + 1
 
     prefix_groups = {}
@@ -245,6 +246,7 @@ class ShapExplanation:
         min_cluster_size: int = 50,
         features_ignore=None,
         keep_zero_values=False,
+        return_plot=True
     ):
         # TODO: add alpha to all plots
         print("PLOTTING `{}`:".format(plot_type))
@@ -285,20 +287,27 @@ class ShapExplanation:
         if plot_type == "summary":
             # we provide original data for 1) names of columns 2) data values, compared with 3) Shap values.
             # import pdb;pdb.set_trace()
-            shap.summary_plot(
+            plot = shap.summary_plot(
                 shap_values[:, feature_ids_to_plot],
                 X_plot.iloc[:, feature_ids_to_plot],
                 max_display=n_features_display,
                 alpha=0.3,
+                matplotlib=return_plot,
+                show=True
             )
             vals = np.abs(shap_values[:, feature_ids_to_plot]).mean(0)
             feature_importance = pd.DataFrame(list(zip(features, vals)), columns=["col_name", "feature_importance_vals"])
             feature_importance.sort_values(by=["feature_importance_vals"], ascending=False, inplace=True)
-            return feature_importance
+            return feature_importance, plot
         elif plot_type == "summary_group":
             prefix_groups = column_to_prefix_map(columns=self.columns)
             shap_groups = aggregate_shap_by_group(shap_vals=self.shap_values, features=self.columns, groups=prefix_groups)
-            shap.summary_plot(shap_groups.values, features=shap_groups.columns,  alpha=0.3,)
+            shap.summary_plot(shap_groups.values, features=shap_groups.columns,  alpha=0.3, matplotlib = return_plot,show = True)
+
+            vals = np.abs(shap_values[:, feature_ids_to_plot]).mean(0)
+            feature_importance = pd.DataFrame(list(zip(features, vals)), columns=["col_name", "feature_importance_vals"])
+            feature_importance.sort_values(by=["feature_importance_vals"], ascending=False, inplace=True)
+            return feature_importance, plot
         elif plot_type == "dependence":
             assert features != None
             for feat in features:
