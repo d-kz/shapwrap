@@ -2,14 +2,19 @@
 A wrapper for easier and slightly more extended SHAP library usage. Just makes this easier to plug in and not worry about formatting of the package. 
 
 Extended features:
-- group categorical features effect via `summary_group`. Super useful if you use pd.get_dummies() in your pipelines, so a single feature gets obfuscated behind multiple dummies. This tried to group it back together by common prefix. 
-- `feature_breakout` will calculate mean Shap contribution from a feature's value. The idea is to get a sense of which feature-value pairs are driving most of the model decisions and if it makes sense. 
+- group categorical features effect via `summary_group`. Super useful if you use pd.get_dummies() in your pipelines, so a single feature effect gets obfuscated behind multiple dummies. This will try to group it back together by common prefix. 
+- `feature_breakout` will calculate mean Shap contribution from a particular feature's value. The idea is to get a sense of which feature-value pairs are driving most of the model decisions. For continuous feature it will split it into 3 quantiles. 
 
 
 # Setup
 Install via:
 
 ```pip install shapwrap```
+
+Or clone this package and install as editable install:
+
+```pip install -e .```
+
 
 Followed this for pip package setup:
 ```https://betterscientificsoftware.github.io/python-for-hpc/tutorials/python-pypi-packaging/#what-is-pip```
