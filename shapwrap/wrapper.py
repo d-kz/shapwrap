@@ -243,7 +243,7 @@ class ShapExplanation:
                     feature_values = X_plot[col_name]
                     if is_continuous:
                         # Bin continuous feature values into 3 categories.
-                        feature_values = pd.cut(feature_values, bins=3, labels=False)
+                        feature_values = pd.qcut(feature_values, q=3, labels=False)
             
                     df_val_con = pd.DataFrame(
                         zip(feature_values, shap_values_for_col, shap_values_for_col), columns=["value", "size", "mean_impact"]
